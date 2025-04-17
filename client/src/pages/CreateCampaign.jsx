@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 
@@ -9,110 +9,127 @@ import { checkIfImage } from '../utils';
 
 const CreateCampaign = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
   const { createCampaign } = useStateContext();
-  const [form, setForm] = useState({
+  const [loading, setLoading] = useState(false);
+  const [campaignData, setCampaignData] = useState({
     name: '',
     title: '',
     description: '',
-    target: '', 
+    target: '',
     deadline: '',
     image: ''
   });
 
-  const handleFormFieldChange = (fieldName, e) => {
-    setForm({ ...form, [fieldName]: e.target.value })
-  }
+  const updateFormField = (field, event) => {
+    setCampaignData(prev => ({
+      ...prev,
+      [field]: event.target.value
+    }));
+  };
 
-  const handleSubmit = async (e) => {
+  const handleCampaignSubmit = async (e) => {
     e.preventDefault();
 
-    checkIfImage(form.image, async (exists) => {
-      if(exists) {
-        setIsLoading(true)
-        await createCampaign({ ...form, target: ethers.utils.parseUnits(form.target, 18)})
-        setIsLoading(false);
-        navigate('/');
+    checkIfImage(campaignData.image, async (isValidImage) => {
+      if (isValidImage) {
+        try {
+          setLoading(true);
+          const formattedData = {
+            ...campaignData,
+            target: ethers.utils.parseUnits(campaignData.target, 18)
+          };
+          await createCampaign(formattedData);
+          navigate('/');
+        } catch (error) {
+          console.error('Campaign creation failed:', error);
+        } finally {
+          setLoading(false);
+        }
       } else {
-        alert('Provide valid image URL')
-        setForm({ ...form, image: '' });
+        alert('Please enter a valid image URL.');
+        setCampaignData({ ...campaignData, image: '' });
       }
-    })
-  }
+    });
+  };
 
   return (
-    <div className="bg-[#1c1c24] flex justify-center items-center flex-col rounded-[10px] sm:p-10 p-4">
-      {isLoading && <Loader />}
-      <div className="flex justify-center items-center p-[16px] sm:min-w-[380px] bg-[#3a3a43] rounded-[10px]">
-        <h1 className="font-epilogue font-bold sm:text-[25px] text-[18px] leading-[38px] text-white">Start a Campaign</h1>
+    <div className="bg-[#1c1c24] p-4 sm:p-10 flex flex-col items-center justify-center rounded-[10px]">
+      {loading && <Loader />}
+
+      <div className="bg-[#3a3a43] p-[16px] sm:min-w-[380px] flex justify-center items-center rounded-[10px]">
+        <h1 className="text-white font-epilogue font-bold text-[18px] sm:text-[25px] leading-[38px]">
+          Launch a New Campaign
+        </h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full mt-[65px] flex flex-col gap-[30px]">
+      <form onSubmit={handleCampaignSubmit} className="w-full mt-[65px] flex flex-col gap-[30px]">
         <div className="flex flex-wrap gap-[40px]">
-          <FormField 
+          <FormField
             labelName="Your Name *"
-            placeholder="John Doe"
+            placeholder="Jane Smith"
             inputType="text"
-            value={form.name}
-            handleChange={(e) => handleFormFieldChange('name', e)}
+            value={campaignData.name}
+            handleChange={(e) => updateFormField('name', e)}
           />
-          <FormField 
+          <FormField
             labelName="Campaign Title *"
-            placeholder="Write a title"
+            placeholder="Give your campaign a title"
             inputType="text"
-            value={form.title}
-            handleChange={(e) => handleFormFieldChange('title', e)}
+            value={campaignData.title}
+            handleChange={(e) => updateFormField('title', e)}
           />
         </div>
 
-        <FormField 
-            labelName="Story *"
-            placeholder="Write your story"
-            isTextArea
-            value={form.description}
-            handleChange={(e) => handleFormFieldChange('description', e)}
-          />
+        <FormField
+          labelName="Story *"
+          placeholder="Describe the story behind your campaign"
+          isTextArea
+          value={campaignData.description}
+          handleChange={(e) => updateFormField('description', e)}
+        />
 
-        <div className="w-full flex justify-start items-center p-4 bg-[#8c6dfd] h-[120px] rounded-[10px]">
-          <img src={money} alt="money" className="w-[40px] h-[40px] object-contain"/>
-          <h4 className="font-epilogue font-bold text-[25px] text-white ml-[20px]">You will get 100% of the raised amount</h4>
+        <div className="w-full bg-[#8c6dfd] h-[120px] rounded-[10px] flex items-center p-4">
+          <img src={money} alt="campaign-funding" className="w-[40px] h-[40px] object-contain" />
+          <h4 className="text-white text-[25px] font-epilogue font-bold ml-[20px]">
+            You will receive 100% of the raised funds
+          </h4>
         </div>
 
         <div className="flex flex-wrap gap-[40px]">
-          <FormField 
+          <FormField
             labelName="Goal *"
-            placeholder="ETH 0.50"
+            placeholder="e.g., ETH 0.75"
             inputType="text"
-            value={form.target}
-            handleChange={(e) => handleFormFieldChange('target', e)}
+            value={campaignData.target}
+            handleChange={(e) => updateFormField('target', e)}
           />
-          <FormField 
+          <FormField
             labelName="End Date *"
-            placeholder="End Date"
+            placeholder="Select deadline"
             inputType="date"
-            value={form.deadline}
-            handleChange={(e) => handleFormFieldChange('deadline', e)}
+            value={campaignData.deadline}
+            handleChange={(e) => updateFormField('deadline', e)}
           />
         </div>
 
-        <FormField 
-            labelName="Campaign image *"
-            placeholder="Place image URL of your campaign"
-            inputType="url"
-            value={form.image}
-            handleChange={(e) => handleFormFieldChange('image', e)}
-          />
+        <FormField
+          labelName="Campaign Image *"
+          placeholder="Paste a link to the image"
+          inputType="url"
+          value={campaignData.image}
+          handleChange={(e) => updateFormField('image', e)}
+        />
 
-          <div className="flex justify-center items-center mt-[40px]">
-            <CustomButton 
-              btnType="submit"
-              title="Submit new campaign"
-              styles="bg-[#1dc071]"
-            />
-          </div>
+        <div className="flex justify-center items-center mt-[40px]">
+          <CustomButton
+            btnType="submit"
+            title="Create Campaign"
+            styles="bg-[#1dc071]"
+          />
+        </div>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default CreateCampaign
+export default CreateCampaign;
