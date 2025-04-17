@@ -1,4 +1,13 @@
-export { default as Home } from './Home';
-export { default as Profile } from './Profile';
-export { default as CreateCampaign } from './CreateCampaign';
-export { default as CampaignDetails } from './CampaignDetails';
+// Centralized page exports for cleaner imports across the app
+
+import HomePage from './Home';
+import UserProfile from './Profile';
+import NewCampaign from './CreateCampaign';
+import CampaignInfo from './CampaignDetails';
+
+export {
+  HomePage,
+  UserProfile,
+  NewCampaign,
+  CampaignInfo
+};
