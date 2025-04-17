@@ -1,32 +1,39 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 
 import { DisplayCampaigns } from '../components';
-import { useStateContext } from '../context'
+import { useStateContext } from '../context';
 
 const Home = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [campaigns, setCampaigns] = useState([]);
-
   const { address, contract, getCampaigns } = useStateContext();
 
-  const fetchCampaigns = async () => {
-    setIsLoading(true);
-    const data = await getCampaigns();
-    setCampaigns(data);
-    setIsLoading(false);
-  }
+  const [loading, setLoading] = useState(false);
+  const [campaignList, setCampaignList] = useState([]);
 
+  // Function to retrieve all campaigns from the blockchain contract
+  const loadCampaigns = async () => {
+    try {
+      setLoading(true);
+      const fetchedCampaigns = await getCampaigns();
+      setCampaignList(fetchedCampaigns);
+    } catch (error) {
+      console.error('Failed to fetch campaigns:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    if(contract) fetchCampaigns();
-  }, [address, contract]);
+    if (contract) {
+      loadCampaigns();
+    }
+  }, [contract, address]);
 
   return (
-    <DisplayCampaigns 
-      title="All Campaigns"
-      isLoading={isLoading}
-      campaigns={campaigns}
+    <DisplayCampaigns
+      title="Explore All Campaigns"
+      isLoading={loading}
+      campaigns={campaignList}
     />
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
