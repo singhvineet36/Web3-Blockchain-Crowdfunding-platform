@@ -1,22 +1,34 @@
+// Calculate how many days left until a given deadline
 export const daysLeft = (deadline) => {
-  const difference = new Date(deadline).getTime() - Date.now();
-  const remainingDays = difference / (1000 * 3600 * 24);
+  const now = Date.now();
+  const deadlineTime = new Date(deadline).getTime(); // convert deadline to timestamp
 
-  return remainingDays.toFixed(0);
+  const diff = deadlineTime - now;
+  const days = diff / (1000 * 60 * 60 * 24); // ms to days
+
+  // Just returning whole days — might need to handle negative values later
+  return days.toFixed(0);
 };
 
+// Used to get how much of the goal has been raised as a percentage
 export const calculateBarPercentage = (goal, raisedAmount) => {
-  const percentage = Math.round((raisedAmount * 100) / goal);
+  if (!goal) return 0; // avoid divide-by-zero (was a bug once)
 
-  return percentage;
+  const percent = Math.round((raisedAmount * 100) / goal);
+  return percent; // might want to clamp to 100 in UI instead
 };
 
+// Utility to check if a URL actually points to a valid image
 export const checkIfImage = (url, callback) => {
   const img = new Image();
   img.src = url;
 
-  if (img.complete) callback(true);
+  // This covers cached images (apparently onLoad doesn't always trigger then)
+  if (img.complete) {
+    callback(true);
+  }
 
   img.onload = () => callback(true);
-  img.onerror = () => callback(false);
+  img.onerror = () => callback(false); // fallback if it's not a valid image
 };
+
