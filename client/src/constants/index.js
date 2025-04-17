@@ -1,37 +1,46 @@
-import { createCampaign, dashboard, logout, payment, profile, withdraw } from '../assets';
+import {
+  createCampaign,
+  dashboard,
+  logout,
+  payment,
+  profile,
+  withdraw,
+} from '../assets';
 
-export const navlinks = [
+// Custom navigation structure for sidebar and routing
+export const navigationItems = [
   {
-    name: 'dashboard',
-    imgUrl: dashboard,
-    link: '/',
+    label: 'Dashboard',
+    icon: dashboard,
+    path: '/',
   },
   {
-    name: 'campaign',
-    imgUrl: createCampaign,
-    link: '/create-campaign',
+    label: 'Start Campaign',
+    icon: createCampaign,
+    path: '/create-campaign',
   },
   {
-    name: 'payment',
-    imgUrl: payment,
-    link: '/',
-    disabled: true,
+    label: 'Payments (Coming Soon)',
+    icon: payment,
+    path: '/',
+    isDisabled: true,
   },
   {
-    name: 'withdraw',
-    imgUrl: withdraw,
-    link: '/',
-    disabled: true,
+    label: 'Withdraw Funds',
+    icon: withdraw,
+    path: '/',
+    isDisabled: true,
   },
   {
-    name: 'profile',
-    imgUrl: profile,
-    link: '/profile',
+    label: 'My Profile',
+    icon: profile,
+    path: '/profile',
   },
   {
-    name: 'logout',
-    imgUrl: logout,
-    link: '/',
-    disabled: true,
+    label: 'Log Out',
+    icon: logout,
+    path: '/',
+    isDisabled: true,
   },
 ];
+
