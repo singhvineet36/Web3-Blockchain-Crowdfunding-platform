@@ -1,11 +1,13 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
-// https://vitejs.dev/config/
+// Vite config file — might add more tweaks later if needed
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react()  // could add more plugins here down the line
+  ],
   define: {
-    global: "globalThis",
-    "process.env": {},
+    global: "globalThis", // patch for Node polyfills stuff
+    "process.env": {},    // stubbed env for some legacy libs
   },
 });
