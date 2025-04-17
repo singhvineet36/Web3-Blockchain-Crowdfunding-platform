@@ -44,4 +44,4 @@ yarn release
 
 ## Join our Discord!
 
-For any questions, suggestions, join our discord at [https://discord.gg/thirdweb](https://discord.gg/thirdweb).
+For any questions, suggestions, join our discord at [https://discord.gg/singhvineet36](https://discord.gg/singhvineet36).
