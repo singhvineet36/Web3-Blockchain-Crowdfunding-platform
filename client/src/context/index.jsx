@@ -1,101 +1,114 @@
-import React, { useContext, createContext } from 'react';
-
-import { useAddress, useContract, useMetamask, useContractWrite } from '@thirdweb-dev/react';
+import React, { createContext, useContext } from 'react';
+import {
+  useContract,
+  useContractWrite,
+  useAddress,
+  useMetamask
+} from '@thirdweb-dev/react';
 import { ethers } from 'ethers';
-import { EditionMetadataWithOwnerOutputSchema } from '@thirdweb-dev/sdk';
 
-const StateContext = createContext();
+// Creating a custom context to share Web3 state across the app
+const AppContext = createContext();
 
-export const StateContextProvider = ({ children }) => {
+export const AppProvider = ({ children }) => {
+  const userAddress = useAddress();
+  const connectWithMetamask = useMetamask();
+
   const { contract } = useContract('0xf59A1f8251864e1c5a6bD64020e3569be27e6AA9');
-  const { mutateAsync: createCampaign } = useContractWrite(contract, 'createCampaign');
+  const { mutateAsync: writeNewCampaign } = useContractWrite(contract, 'createCampaign');
 
-  const address = useAddress();
-  const connect = useMetamask();
-
-  const publishCampaign = async (form) => {
+  // Submit a new campaign to the smart contract
+  const submitCampaign = async (form) => {
     try {
-      const data = await createCampaign({
-				args: [
-					address, // owner
-					form.title, // title
-					form.description, // description
-					form.target,
-					new Date(form.deadline).getTime(), // deadline,
-					form.image,
-				],
-			});
+      const tx = await writeNewCampaign({
+        args: [
+          userAddress,
+          form.title,
+          form.description,
+          form.target,
+          new Date(form.deadline).getTime(),
+          form.image,
+        ],
+      });
 
-      console.log("contract call success", data)
+      console.log('✅ Campaign successfully submitted:', tx);
     } catch (error) {
-      console.log("contract call failure", error)
+      console.error('❌ Error creating campaign:', error);
     }
-  }
+  };
 
-  const getCampaigns = async () => {
-    const campaigns = await contract.call('getCampaigns');
+  // Retrieve all campaigns deployed via the contract
+  const loadAllCampaigns = async () => {
+    try {
+      const campaigns = await contract.call('getCampaigns');
 
-    const parsedCampaings = campaigns.map((campaign, i) => ({
-      owner: campaign.owner,
-      title: campaign.title,
-      description: campaign.description,
-      target: ethers.utils.formatEther(campaign.target.toString()),
-      deadline: campaign.deadline.toNumber(),
-      amountCollected: ethers.utils.formatEther(campaign.amountCollected.toString()),
-      image: campaign.image,
-      pId: i
-    }));
-
-    return parsedCampaings;
-  }
-
-  const getUserCampaigns = async () => {
-    const allCampaigns = await getCampaigns();
-
-    const filteredCampaigns = allCampaigns.filter((campaign) => campaign.owner === address);
-
-    return filteredCampaigns;
-  }
-
-  const donate = async (pId, amount) => {
-    const data = await contract.call('donateToCampaign', [pId], { value: ethers.utils.parseEther(amount)});
-
-    return data;
-  }
-
-  const getDonations = async (pId) => {
-    const donations = await contract.call('getDonators', [pId]);
-    const numberOfDonations = donations[0].length;
-
-    const parsedDonations = [];
-
-    for(let i = 0; i < numberOfDonations; i++) {
-      parsedDonations.push({
-        donator: donations[0][i],
-        donation: ethers.utils.formatEther(donations[1][i].toString())
-      })
+      return campaigns.map((c, idx) => ({
+        owner: c.owner,
+        title: c.title,
+        description: c.description,
+        target: ethers.utils.formatEther(c.target.toString()),
+        deadline: c.deadline.toNumber(),
+        amountCollected: ethers.utils.formatEther(c.amountCollected.toString()),
+        image: c.image,
+        pId: idx,
+      }));
+    } catch (error) {
+      console.error('⚠️ Could not load campaigns:', error);
+      return [];
     }
+  };
 
-    return parsedDonations;
-  }
+  // Fetch only those campaigns started by the connected wallet
+  const loadUserCampaigns = async () => {
+    const all = await loadAllCampaigns();
+    return all.filter(c => c.owner === userAddress);
+  };
 
+  // Donate ETH to a specific campaign by ID
+  const donateToCampaign = async (campaignId, amountInEth) => {
+    try {
+      const tx = await contract.call('donateToCampaign', [campaignId], {
+        value: ethers.utils.parseEther(amountInEth),
+      });
+      return tx;
+    } catch (error) {
+      console.error('💸 Donation failed:', error);
+    }
+  };
+
+  // Get all donors and their contributions for a given campaign
+  const retrieveDonations = async (campaignId) => {
+    try {
+      const [donators, donations] = await contract.call('getDonators', [campaignId]);
+      const totalDonations = donators.length;
+
+      return Array.from({ length: totalDonations }, (_, i) => ({
+        donator: donators[i],
+        donation: ethers.utils.formatEther(donations[i].toString()),
+      }));
+    } catch (error) {
+      console.error('🧾 Error fetching donation details:', error);
+      return [];
+    }
+  };
 
   return (
-    <StateContext.Provider
-      value={{ 
-        address,
+    <AppContext.Provider
+      value={{
+        userAddress,
+        connectWithMetamask,
         contract,
-        connect,
-        createCampaign: publishCampaign,
-        getCampaigns,
-        getUserCampaigns,
-        donate,
-        getDonations
+        submitCampaign,
+        loadAllCampaigns,
+        loadUserCampaigns,
+        donateToCampaign,
+        retrieveDonations,
       }}
     >
       {children}
-    </StateContext.Provider>
-  )
-}
+    </AppContext.Provider>
+  );
+};
 
-export const useStateContext = () => useContext(StateContext);
+// Custom React hook for accessing the Web3 app context
+export const useAppContext = () => useContext(AppContext);
