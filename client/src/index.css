@@ -1,18 +1,31 @@
+/* Importing Epilogue from Google Fonts — looks clean, works well for headings */
 @import url("https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&display=swap");
 
+/* Tailwind base setup */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Custom gradient background — used for card overlays, I think? */
 .linear-gradient {
   background: linear-gradient(
     179.14deg,
-    rgba(32, 18, 63, 0) -7.14%,
+    rgba(32, 18, 63, 0) -7.14%,  /* this starting angle looked better than 180 */
     #000000 87.01%
   );
+  /* might adjust this later to be a bit lighter? */
 }
 
+/* Tweak to make calendar picker icon fit the dark theme */
 input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  filter: invert(0.8);
+  filter: invert(0.8);  /* makes it visible against dark bg — works on Chrome */
+  /* Tried grayscale(1) earlier, but this looked better */
 }
+
+/* Might want to add button focus styles here later */
+/* .btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+} */
+
