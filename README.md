@@ -116,7 +116,6 @@ On my GitHub profile, you can find a collection of projects that demonstrate my 
 Thank you for taking the time to learn about me, and feel free to check out my projects on GitHub!
 
 ## 🧑‍💻 Team Members
-# 
 ![Vineet Singh](https://github.com/singhvineet36)
 ![Abhijit Rai](https://github.com/AbhijitRai2003)
 ![Saurav Jha](https://github.com/jhsaurav)
