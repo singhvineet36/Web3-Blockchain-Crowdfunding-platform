@@ -32,11 +32,6 @@ Join me in transforming the crowdfunding landscape and embracing the potential o
 **Framework:** ThirdWeb for smart contracts 
 
 
-## 🧪 Demo
-
-https://web3-crowdfunding-by-saivamsi.netlify.app/
-
-
 ## 📸 Screenshots
 
 - CrowFunding Main Interface
