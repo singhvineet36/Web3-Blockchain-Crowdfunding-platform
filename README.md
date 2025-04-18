@@ -114,15 +114,15 @@ Overall, this project provided invaluable insights into Web3, blockchain technol
 ## 🚀 About Me
 Hi there! I am Vineet Singh, a 3rd year computer science undergraduate with at Lloyd Institute of Engineering and Technology , Greater Noida. I have a strong passion for software development, and Blockchain .
 
-## 🤖 Team members
-![Vineet Singh](https://github.com/singhvineet36)
-![Abhijit Rai](https://github.com/AbhijitRai2003)
-![Saurav Jha](https://github.com/jhsaurav)
-![Adarsh Chauhan](https://github.com/adarshchauhan77)
-
-
 I'm proficient in C, C++, Java, and Python programming languages. I also have expertise in Data Structures and Algorithms. Besides, I am a Full-stack Web Developer who is familiar with front-end development technologies like HTML, CSS, JavaScript, and React, and also back-end development with Node.js, Express.js, and MongoDB.
 
 On my GitHub profile, you can find a collection of projects that demonstrate my programming and development skills.
 
 Thank you for taking the time to learn about me, and feel free to check out my projects on GitHub!
+
+## 🧑‍💻 Team Members
+# 
+![Vineet Singh](https://github.com/singhvineet36)
+![Abhijit Rai](https://github.com/AbhijitRai2003)
+![Saurav Jha](https://github.com/jhsaurav)
+![Adarsh Chauhan](https://github.com/adarshchauhan77)
